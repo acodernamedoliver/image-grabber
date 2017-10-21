@@ -17,6 +17,8 @@ import bs4
 # for making directories to store images
 import os
 
+image_count = 0
+
 def check(address):
     if type(address) == str:
         # link points to an image
@@ -24,6 +26,12 @@ def check(address):
             # make directory for images
             os.makedirs('pictures', exist_ok = True)
             download_and_save(address)
+            # image counter
+            global image_count 
+            image_count += 1
+            # invalid address
+        elif address[:4] != 'http':
+            print('Invalid address')
         # link points to a web page
         else:
             # request the URL
@@ -75,9 +83,6 @@ def imgur(text):
         if image_tag is not None:
             address = 'https:' + image_tag.get("src")
             image_links.append(address)
-        #else:
-            #print('URL does not have a valid image.')
-            #print('')
     return image_links
 
 # reddit.com support
@@ -117,4 +122,6 @@ print('Downloading page:', address)
 print('')
 # run downloader
 check(address)
+print('')
+print(image_count, 'images downloaded.')
 print('')
