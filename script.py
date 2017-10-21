@@ -36,6 +36,8 @@ def check(address):
                 # check against supported websites
                 if 'reddit.com' in address:
                     check(reddit(text))
+                elif 'imgur.com':
+                    check(imgur(text))
                 else:
                     print('Site not yet supported:', address)
             except requests.exceptions.HTTPError:
@@ -59,6 +61,23 @@ def download_and_save(address):
     image_file.close()
     print('Saved!')
     return None
+
+
+# imgur.com support
+def imgur(text):
+    divs = text.select('.post-image')
+    image_links = []
+    
+    for div in divs:
+        image_tag = div.img
+        
+        if image_tag is not None:
+            address = 'https:' + image_tag.get("src")
+            image_links.append(address)
+        else:
+            print('URL does not have a valid image')
+    
+    return image_links
 
 # reddit.com support
 def reddit(text):
