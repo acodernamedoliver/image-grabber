@@ -65,29 +65,27 @@ def download_and_save(address):
 
 # imgur.com support
 def imgur(text):
+    # collect images from album
     divs = text.select('.post-image')
+    # create a list of image links
     image_links = []
-    
+    # check links have an image
     for div in divs:
         image_tag = div.img
-        
         if image_tag is not None:
             address = 'https:' + image_tag.get("src")
             image_links.append(address)
-        else:
-            print('URL does not have a valid image')
-    
+        #else:
+            #print('URL does not have a valid image.')
+            #print('')
     return image_links
 
 # reddit.com support
 def reddit(text):
-
     # identify full image URLs
     posts = text.select('div[data-url]')
-    
     # a list of the image links
     image_links = []
-
     # collect all available posts
     for index in range(len(posts)):
         image_links.append(posts[index].get('data-url'))
@@ -117,7 +115,6 @@ else:
 print('')
 print('Downloading page:', address)
 print('')
-
+# run downloader
 check(address)
-
 print('')
