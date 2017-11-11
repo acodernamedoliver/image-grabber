@@ -16,14 +16,14 @@ python3 script.py <URL>
 ```
 
 ## Website support
-- reddit
 - imgur
+- reddit
 
 ## TODO
-### Add support for:
-- google images
+### Add support for
 - flickr
+- google images
 - you tell me :blush:
 
-### Other:
+### Other
 - provide option for custom directory
