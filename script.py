@@ -22,7 +22,7 @@ image_count = 0
 def check(address):
     if type(address) == str:
         # link points to an image
-        if ('.jpg' in address or '.jpeg' in address or '.tiff' in address or '.gif' in address or '.bmp' in address or '.png' in address or '.bat' in address):
+        if ('.jpg' in address or '.jpeg' in address or '.tiff' in address or '.gif' in address or '.bmp' in address or '.png' in address or '.bat' in address or '.gifv' in address or '.webm' in address):
             # make directory for images
             os.makedirs('pictures', exist_ok = True)
             download_and_save(address)
@@ -42,10 +42,12 @@ def check(address):
                 # pass text attribute to bs4 object using lxml parser
                 text = bs4.BeautifulSoup(response.text, "lxml")
                 # check against supported websites
-                if 'reddit.com' in address:
-                    check(reddit(text))
-                elif 'imgur.com':
+                if 'google.com' in address:
+                    check(googleimages(text))
+                elif 'imgur.com' in address:
                     check(imgur(text))
+                elif 'reddit.com' in address:
+                    check(reddit(text))
                 else:
                     print('Site not yet supported:', address)
             except requests.exceptions.HTTPError:
@@ -69,7 +71,6 @@ def download_and_save(address):
     image_file.close()
     print('Saved!')
     return None
-
 
 # imgur.com support
 def imgur(text):
