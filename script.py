@@ -22,7 +22,7 @@ image_count = 0
 def check(address):
     if type(address) == str:
         # link points to an image
-        if ('.jpg' in address or '.jpeg' in address or '.tiff' in address or '.gif' in address or '.bmp' in address or '.png' in address or '.bat' in address or '.gifv' in address or '.webm' in address):
+        if ('.jpg' in address or '.jpeg' in address or '.tiff' in address or '.gif' in address or '.bmp' in address or '.png' in address or '.bat' in address or '.gifv' in address or '.webm' in address or '.mp4' in address):
             # make directory for images
             os.makedirs('pictures', exist_ok = True)
             download_and_save(address)
@@ -45,7 +45,7 @@ def check(address):
                 if 'google.com' in address:
                     check(googleimages(text))
                 elif 'imgur.com' in address:
-                    check(imgur(text))
+                    check(imgur(address))
                 elif 'reddit.com' in address:
                     check(reddit(text))
                 else:
@@ -73,18 +73,41 @@ def download_and_save(address):
     return None
 
 # imgur.com support
-def imgur(text):
-    # collect images from album
-    divs = text.select('.post-image')
+def imgur(address):
     # create a list of image links
     image_links = []
-    # check links have an image
-    for div in divs:
-        image_tag = div.img
-        if image_tag is not None:
-            address = 'https:' + image_tag.get("src")
-            image_links.append(address)
+    # collect album id
+    id = address[-5:]
+    # make new URL
+    new_URL = 'http://imgur.com/ajaxalbums/getimages/' + id + '/hit.json?all=true'
+    # request the URL
+    response = requests.get(new_URL, headers={'User-agent': 'your bot 0.1'})
+    try:
+        response.raise_for_status()
+        # pass text attribute to bs4 object using lxml parser
+        text = bs4.BeautifulSoup(response.text, "lxml")
+        # get the body of the page
+        p_tag = str(text.select('body')[0])
+        # take just the images part
+        start = p_tag.index('[')
+        end = p_tag.rindex(']')
+        dict = p_tag[start + 1:end]
+        # create list of image parameters
+        image_list = dict.split('},{')
+        for image in image_list:
+            image_id = ''
+            image_ext = ''
+            for i in range(len(image)):
+                if image[i:i + 4] == "hash":
+                    image_id = image[i + 7: i + 14]
+            for j in range(len(image)):
+                if image[j:j + 3] == "ext":
+                    image_ext = image[j + 6: j + 10]
+            image_links.append("https://i.imgur.com/" + image_id + image_ext)
+    except requests.exceptions.HTTPError:
+        print('404 Client Error:', address, 'Not Found.')
     return image_links
+
 
 # reddit.com support
 def reddit(text):
