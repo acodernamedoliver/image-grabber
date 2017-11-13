@@ -92,7 +92,6 @@ def imgur(address):
         response.raise_for_status()
         image_list = json.loads(response.text)
         # create list of image parameters
-        print(response.text)
         for image in image_list['data']['images']:
             image_id = image['hash']
             image_ext = image['ext']
