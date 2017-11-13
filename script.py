@@ -14,6 +14,8 @@ import pyperclip
 import requests
 # for extracting information from html
 import bs4
+# for navigating json responses
+import json
 # for making directories to store images
 import os
 
@@ -105,33 +107,20 @@ def googleimages(address):
 def imgur(address):
     # create a list of image links
     image_links = []
-    # collect album id
-    id = address[-5:]
-    # make new URL
-    new_URL = 'http://imgur.com/ajaxalbums/getimages/' + id + '/hit.json?all=true'
+    if not 'ajax' in address:
+        # collect album id
+        id = address[-5:]
+        # make new URL
+        address = 'http://imgur.com/ajaxalbums/getimages/' + id + '/hit.json?all=true'
     # request the URL
-    response = requests.get(new_URL, headers={'User-agent': 'your bot 0.1'})
+    response = requests.get(address, headers={'User-agent': 'your bot 0.1'})
     try:
         response.raise_for_status()
-        # pass text attribute to bs4 object using lxml parser
-        text = bs4.BeautifulSoup(response.text, "lxml")
-        # get the body of the page
-        p_tag = str(text.select('body')[0])
-        # take just the images part
-        start = p_tag.index('[')
-        end = p_tag.rindex(']')
-        dict = p_tag[start + 1:end]
+        image_list = json.loads(response.text)
         # create list of image parameters
-        image_list = dict.split('},{')
-        for image in image_list:
-            image_id = ''
-            image_ext = ''
-            for i in range(len(image)):
-                if image[i:i + 4] == "hash":
-                    image_id = image[i + 7: i + 14]
-            for j in range(len(image)):
-                if image[j:j + 3] == "ext":
-                    image_ext = image[j + 6: j + 10]
+        for image in image_list['data']['images']:
+            image_id = image['hash']
+            image_ext = image['ext']
             image_links.append("https://i.imgur.com/" + image_id + image_ext)
     except requests.exceptions.HTTPError:
         print('404 Client Error:', address, 'Not Found.')
