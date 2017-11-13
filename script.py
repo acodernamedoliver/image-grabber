@@ -83,24 +83,23 @@ def download_and_save(address):
 
 # images.google.com support
 def googleimages(address):
-    ## create a list of image links
-    #image_links = []
-    ## create new URL
-    #new_link = 'https://www.google.com/search?q=' + address[address.find('=') +
-        #1:address.find('&')] + '&source=lnms&tbm=isch'
+    # create a list of image links
+    image_links = []
+    # create new URL
+    new_link = 'https://www.google.com/search?q=' + address[address.find('=') +
+        1:address.find('&')] + '&source=lnms&tbm=isch'
 
-    #try:
-        #resp = requests.get(new_link, headers={'User-agent': 'your bot 0.1'})
-        ## get result page
-        #page = bs4.BeautifulSoup(resp.text, "lxml")
-        ## collect images from page
-        #thumbs = page.find_all("rg_di")
-        #print(thumbs)
-    #except requests.exceptions.HTTPError:
-        #print('404 Client Error:', address, 'Not Found.')
+    try:
+        resp = requests.get(new_link, headers={'User-agent': 'your bot 0.1'})
+        # get result page
+        page = bs4.BeautifulSoup(resp.text, "lxml")
+        # collect images from page
+        thumbs = page.find_all("rg_di")
+        print(thumbs)
+    except requests.exceptions.HTTPError:
+        print('404 Client Error:', address, 'Not Found.')
 
-    #return image_links
-    pass
+    return image_links
 
 
 # imgur.com support
