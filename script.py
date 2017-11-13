@@ -18,6 +18,8 @@ import bs4
 import json
 # for making directories to store images
 import os
+# for pattern matching
+import re
 
 
 image_count = 0
@@ -94,8 +96,11 @@ def googleimages(address):
         # get result page
         page = bs4.BeautifulSoup(response.text, "lxml")
         # collect images from page
-        thumbs = page.find_all("rg_meta")
-        print(thumbs)
+        thumbs = page.find_all(attrs={'class':'rg_meta notranslate'})
+        json_strs = [thumb.string for thumb in thumbs]
+        for json_str in json_strs:
+            j_obj = json.loads(json_str)
+            image_links.append(j_obj['ou'])
     except requests.exceptions.HTTPError:
         print('404 Client Error:', address, 'Not Found.')
 
