@@ -17,15 +17,17 @@ import bs4
 # for making directories to store images
 import os
 
+
 image_count = 0
+
 
 def check(address):
     if type(address) == str:
         # link points to an image
-        if ('.jpg' in address or '.jpeg' in address or '.tiff' in address or 
-            '.gif' in address or '.bmp' in address or '.png' in address or 
-            '.bat' in address or '.gifv' in address or '.webm' in address or 
-            '.mp4' in address):
+        if ('.jpg' in address or '.jpeg' in address or '.tiff' in address or
+                '.gif' in address or '.bmp' in address or '.png' in address or
+                '.bat' in address or '.gifv' in address or '.webm' in address or
+                '.mp4' in address):
             # make directory for images
             os.makedirs('pictures', exist_ok = True)
             download_and_save(address)
@@ -45,8 +47,8 @@ def check(address):
                 # pass text attribute to bs4 object using lxml parser
                 text = bs4.BeautifulSoup(response.text, "lxml")
                 # check against supported websites
-                if 'google.com' in address:
-                    check(googleimages(text))
+                if 'google.' in address:
+                    check(googleimages(address))
                 elif 'imgur.com' in address:
                     check(imgur(address))
                 elif 'reddit.com' in address:
@@ -61,12 +63,13 @@ def check(address):
             check(sub_address)
     return None
 
+
 # function for downloading and saving on disk
 def download_and_save(address):
     # download image
     print('Downloading image', os.path.basename(address))
     image = requests.get(address, headers = {'User-agent': 'your bot 0.1'})
-    image.raise_for_status
+    image.raise_for_status()
     image_file = open(os.path.join('pictures', os.path.basename(address)), 'wb')
     # save image
     for chunk in image.iter_content(100000):
@@ -74,6 +77,29 @@ def download_and_save(address):
     image_file.close()
     print('Saved!')
     return None
+
+
+# images.google.com support
+def googleimages(address):
+    ## create a list of image links
+    #image_links = []
+    ## create new URL
+    #new_link = 'https://www.google.com/search?q=' + address[address.find('=') +
+        #1:address.find('&')] + '&source=lnms&tbm=isch'
+
+    #try:
+        #resp = requests.get(new_link, headers={'User-agent': 'your bot 0.1'})
+        ## get result page
+        #page = bs4.BeautifulSoup(resp.text, "lxml")
+        ## collect images from page
+        #thumbs = page.find_all("rg_di")
+        #print(thumbs)
+    #except requests.exceptions.HTTPError:
+        #print('404 Client Error:', address, 'Not Found.')
+
+    #return image_links
+    pass
+
 
 # imgur.com support
 def imgur(address):
@@ -125,6 +151,7 @@ def reddit(text):
     print('')
     return image_links
 
+
 # act according to the presence of an argument (URL)
 if len(sys.argv) > 1:
     # get address from argument
@@ -142,6 +169,7 @@ else:
         print('You might need to install xclip.')
         print('')
         sys.exit()
+
 
 # request address
 print('')
