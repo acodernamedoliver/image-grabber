@@ -90,11 +90,11 @@ def googleimages(address):
         1:address.find('&')] + '&source=lnms&tbm=isch'
 
     try:
-        resp = requests.get(new_link, headers={'User-agent': 'your bot 0.1'})
+        response = requests.get(new_link, headers={'User-agent': 'your bot 0.1'})
         # get result page
-        page = bs4.BeautifulSoup(resp.text, "lxml")
+        page = bs4.BeautifulSoup(response.text, "lxml")
         # collect images from page
-        thumbs = page.find_all("rg_di")
+        thumbs = page.find_all("rg_meta")
         print(thumbs)
     except requests.exceptions.HTTPError:
         print('404 Client Error:', address, 'Not Found.')
