@@ -40,7 +40,7 @@ def check(address):
         # link points to a web page
         else:
             # request the URL
-            response = requests.get(address, headers = {'User-agent': 'your bot 0.1'})
+            response = requests.get(address, headers = {'User-agent': user_agent})
             # check if an error is raised
             try:
                 response.raise_for_status()
