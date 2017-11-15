@@ -19,17 +19,15 @@ import json
 # for making directories to store images
 import os
 
-
+user_agent = 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.89 Safari/537.36'
 image_count = 0
 
 
 def check(address):
     if type(address) == str:
         # link points to an image
-        if ('.jpg' in address or '.jpeg' in address or '.tiff' in address or
-                '.gif' in address or '.bmp' in address or '.png' in address or
-                '.bat' in address or '.gifv' in address or '.webm' in address or
-                '.mp4' in address):
+        #any() checks a list of conditions; We're checking for any one extension in the address
+        if any(ext in address for ext in ['.jpg','.jpeg','.tiff','.gif','.bmp','.png','.bat','.gifv','.webm','.mp4']):
             # make directory for images
             os.makedirs('pictures', exist_ok = True)
             download_and_save(address)
@@ -42,7 +40,7 @@ def check(address):
         # link points to a web page
         else:
             # request the URL
-            response = requests.get(address, headers = {'User-agent': 'your bot 0.1'})
+            response = requests.get(address, headers = {'User-agent': user_agent})
             # check if an error is raised
             try:
                 response.raise_for_status()
@@ -68,11 +66,16 @@ def check(address):
 
 # function for downloading and saving on disk
 def download_and_save(address):
+    #We're checking if file extension has ? appended; if so, we're removing excess text to save with valid filename
+    if any(ext in address for ext in ['.jpg?','.jpeg?','.tiff?','.gif?','.bmp?','.png?','.bat?','.gifv?','.webm?','.mp4?']):
+        filename = address[:address.rfind('?')]
+    else:
+        filename = address
     # download image
-    print('Downloading image', os.path.basename(address))
-    image = requests.get(address, headers = {'User-agent': 'your bot 0.1'})
+    print('Downloading image', os.path.basename(filename))
+    image = requests.get(address, headers = {'User-agent': user_agent})
     image.raise_for_status()
-    image_file = open(os.path.join('pictures', os.path.basename(address)), 'wb')
+    image_file = open(os.path.join('pictures', os.path.basename(filename)), 'wb')
     # save image
     for chunk in image.iter_content(100000):
         image_file.write(chunk)
@@ -90,12 +93,15 @@ def googleimages(address):
         1:address.find('&')] + '&source=lnms&tbm=isch'
 
     try:
-        response = requests.get(new_link, headers={'User-agent': 'your bot 0.1'})
+        response = requests.get(new_link, headers={'User-agent': user_agent})
         # get result page
         page = bs4.BeautifulSoup(response.text, "lxml")
         # collect images from page
-        thumbs = page.find_all("rg_meta")
-        print(thumbs)
+        thumbs = page.find_all(attrs={'class':'rg_meta notranslate'})
+        json_strs = [thumb.string for thumb in thumbs]
+        for json_str in json_strs:
+            j_obj = json.loads(json_str)
+            image_links.append(j_obj['ou'])
     except requests.exceptions.HTTPError:
         print('404 Client Error:', address, 'Not Found.')
 
@@ -112,7 +118,7 @@ def imgur(address):
         # make new URL
         address = 'http://imgur.com/ajaxalbums/getimages/' + id + '/hit.json?all=true'
     # request the URL
-    response = requests.get(address, headers={'User-agent': 'your bot 0.1'})
+    response = requests.get(address, headers={'User-agent': user_agent})
     try:
         response.raise_for_status()
         image_list = json.loads(response.text)
