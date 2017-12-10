@@ -29,7 +29,7 @@ def check(address):
         #any() checks a list of conditions; We're checking for any one extension in the address
         if any(ext in address for ext in ['.jpg','.jpeg','.tiff','.gif','.bmp','.png','.bat','.gifv','.webm','.mp4']):
             # make directory for images
-            os.makedirs('pictures', exist_ok = True)
+            os.makedirs(os.path.join(path, folder_name), exist_ok = True)
             download_and_save(address)
             # image counter
             global image_count 
@@ -75,7 +75,7 @@ def download_and_save(address):
     print('Downloading image', os.path.basename(filename))
     image = requests.get(address, headers = {'User-agent': user_agent})
     image.raise_for_status()
-    image_file = open(os.path.join('pictures', os.path.basename(filename)), 'wb')
+    image_file = open(os.path.join(path, folder_name, os.path.basename(filename)), 'wb')
     # save image
     for chunk in image.iter_content(100000):
         image_file.write(chunk)
@@ -164,6 +164,20 @@ else:
         print('')
         sys.exit()
 
+# act according to the presence of a folder path
+if len(sys.argv) > 2:
+    # get folder path from argument
+    path = sys.argv[2]
+else:
+    path = ''
+
+# act according to the presence of a folder name
+if len(sys.argv) > 3:
+    # get folder name from argument
+    folder_name = sys.argv[3]
+else:
+    folder_name = 'Pictures'
+
 
 # request address
 print('')
@@ -172,5 +186,5 @@ print('')
 # run downloader
 check(address)
 print('')
-print(image_count, 'images downloaded.')
+print(image_count, 'images downloaded in', os.path.join(path, folder_name))
 print('')

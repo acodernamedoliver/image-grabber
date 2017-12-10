@@ -6,13 +6,13 @@ __image-grabber__ takes a URL and proceeds to download all image from the given 
 
 The URL can be either provided as an argument on the command line inside quotes, or can be taken automatically from the clipboard.
 
-Images are stored inside a folder named "pictures", which is created in the same directory the script is stored in.
+Images are, by default, stored inside a folder named "Pictures", which is created in the same directory the script is stored in. For a custom path or folder name, two more argument options are provided.
 
 ## Usage
 __image-grabber__ uses Python3. To use it, navigate to the directory the script is in and type the following:
 
 ```
-python3 script.py <URL>
+python3 script.py ["<URL>"] ["path/to/directory"] ["folder_name"]
 ```
 
 ## Website support
@@ -22,8 +22,5 @@ python3 script.py <URL>
 
 ## TODO
 ### Add support for
-- flickr
-- you tell me :blush:
+- you tell me by opening a new issue:blush:
 
-### Other
-- provide option for custom directory
